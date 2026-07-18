@@ -26,7 +26,7 @@ lint-strict:
 	$(UV) run mypy . --strict
 
 test:
-	$(UV) run pytest
+	$(PYTHON) -m pytest -v
 
 build:
 	$(UV) build --out-dir .
