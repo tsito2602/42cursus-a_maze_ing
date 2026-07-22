@@ -1,4 +1,5 @@
 import random
+from .maze import Maze
 
 WIDTH = 20
 HEIGHT = 15
@@ -76,7 +77,7 @@ class MazeGenerator:
             result.append(name)
         return result
 
-    def generate(self) -> None:
+    def generate(self) -> Maze:
         self.visited = set(self.blocked)
         self.visited.add(self.entry)
         passage: list[tuple[int, int]] = [self.entry]
@@ -93,8 +94,14 @@ class MazeGenerator:
             self.grid[ny][nx] &= ~opposite
             self.visited.add((nx, ny))
             passage.append((nx, ny))
+        return Maze(
+            cells=tuple(tuple(row) for row in self.grid),
+            entry=self.entry,
+            exit=self.exit,
+        )
 
 
 if __name__ == "__main__":
     generator = MazeGenerator(WIDTH, HEIGHT, ENTRY, EXIT, SEED)
-    generator.generate()
+    maze = generator.generate()
+    print(maze)

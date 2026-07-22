@@ -1,5 +1,6 @@
 from pathlib import Path
 from src.mazegen import MazeGenerator
+from src.mazegen.maze import Maze
 
 
 WIDTH = 20
@@ -32,3 +33,20 @@ def test_outer_walls():
     for y in range(HEIGHT):
         assert maze.grid[y][0] & WEST
         assert maze.grid[y][WIDTH - 1] & EAST
+
+
+def test_generate_returns_maze():
+    result = MazeGenerator(WIDTH, HEIGHT, ENTRY, EXIT, SEED).generate()
+
+    assert isinstance(result, Maze)
+    assert result.entry == ENTRY
+    assert result.exit == EXIT
+
+
+def test_generate_dimensions_match_grid():
+    generator = MazeGenerator(WIDTH, HEIGHT, ENTRY, EXIT, SEED)
+    result = generator.generate()
+
+    assert result.width == WIDTH
+    assert result.height == HEIGHT
+    assert result.cells == tuple(tuple(row) for row in generator.grid)
