@@ -55,8 +55,22 @@ class MazeGenerator:
         self.grid: list[list[int]] = [
             [ALL_WALLS] * width for _ in range(height)
         ]
+        if not self._in_frame(*self.entry):
+            raise ValueError("ENTRY is outside the maze")
+        if not self._in_frame(*self.exit):
+            raise ValueError("EXIT is outside the maze")
         self.blocked: set[tuple[int, int]] = self._place_42_pattern()
+        if self.entry in self.blocked:
+            raise ValueError("ENTRY in the 42 pattern")
+        if self.exit in self.blocked:
+            raise ValueError("EXIT in the 42 pattern")
         self.visited: set[tuple[int, int]] = set()
+
+    def _in_frame(self, x: int, y: int) -> bool:
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return True
+        else:
+            return False
 
     def _place_42_pattern(self) -> set[tuple[int, int]]:
         if self.width < PATTERN_WIDTH + 2 or self.height < PATTERN_HEIGHT + 2:
