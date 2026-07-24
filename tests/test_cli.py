@@ -16,7 +16,7 @@ def test_read_menu_choice_retries_invalid_input(
         lambda _: next(choices),
     )
 
-    result = cli.read_menu_choice()
+    result = cli._read_menu_choice()
 
     error_message = "Please enter 1, 2, 3, or 4.\n"
 
@@ -69,8 +69,8 @@ def test_run_handles_menu_actions(
         """Ignore display calls during the CLI test."""
         pass
 
-    monkeypatch.setattr(cli, "generate_maze", fake_generate_maze)
-    monkeypatch.setattr(cli, "read_menu_choice", fake_read_menu_choice)
+    monkeypatch.setattr(cli, "_generate_maze", fake_generate_maze)
+    monkeypatch.setattr(cli, "_read_menu_choice", fake_read_menu_choice)
     monkeypatch.setattr(cli, "rotate_wall_color", fake_rotate_wall_color)
     monkeypatch.setattr(cli, "display_maze", do_nothing)
     monkeypatch.setattr(cli, "display_color_guide", do_nothing)
