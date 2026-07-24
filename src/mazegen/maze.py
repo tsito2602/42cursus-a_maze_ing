@@ -1,8 +1,17 @@
+from enum import IntFlag
 from typing import Annotated
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Coordinate = tuple[int, int]
 Cell = Annotated[int, Field(ge=0, le=0xF)]
+
+
+class Wall(IntFlag):
+    NORTH = 0b0001
+    EAST = 0b0010
+    SOUTH = 0b0100
+    WEST = 0b1000
+    ALL = NORTH | EAST | SOUTH | WEST
 
 
 class Maze(BaseModel):
