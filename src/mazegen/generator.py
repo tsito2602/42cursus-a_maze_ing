@@ -62,7 +62,7 @@ class MazeGenerator:
 
         if not self._in_frame(*self.entry):
             raise ValueError("ENTRY is outside the maze")
-            
+
         if not self._in_frame(*self.exit):
             raise ValueError("EXIT is outside the maze")
 
