@@ -1,8 +1,16 @@
 from mazegen import Maze
 
+WALL_COLORS = (
+    "\x1b[48;5;252m",  # white
+    "\x1b[48;5;39m",  # blue
+    "\x1b[48;5;82m",  # green
+    "\x1b[48;5;208m",  # orange
+)
+
 BACKGROUND_COLOR = {
-    "wall": "\x1b[48;5;252m",
+    "wall": WALL_COLORS[0],
     "passage": "\x1b[48;5;232m",
+    "pattern_42": "\x1b[48;5;245m",
     "entry": "\x1b[48;5;201m",
     "exit": "\x1b[48;5;196m",
     "path": "\x1b[48;5;141m",
@@ -11,83 +19,12 @@ BACKGROUND_COLOR = {
 
 PIXEL = "  "
 RESET = "\x1b[0m"
+CLEAR_SCREEN = "\x1b[2J\x1b[H"
 
 NORTH = 0b0001
 EAST = 0b0010
 SOUTH = 0b0100
 WEST = 0b1000
-
-
-SAMPLE_MAZE_ROWS = (
-    "9139551111555515515395153",
-    "ac2a9102829113855692c3a92",
-    "814402aac42ac2a9138452a86",
-    "a8116aa8552812c0028138683",
-    "868696845142a8386846c6942",
-    "81294143943a8284529553812",
-    "8446943a852c2c4512a95286a",
-    "a951292c2f816fffaac296852",
-    "8416c2852fc4157f829285452",
-    "81453ac56fffafff86aa8153a",
-    "84112813913fafd503c2ac102",
-    "812a82ac6c2fafffac54692aa",
-    "aaaaa8453943c111413956aaa",
-    "8682c453c43c3c6c3a82916c2",
-    "83ac111451692915286a86956",
-    "82c386815416c4292a9685693",
-    "829429681141138444294552a",
-    "ac69443aa83aa841392c39382",
-    "839453a82c46845682812aa82",
-    "c44556c6c555455546c446c46",
-)
-
-SAMPLE_MAZE_ENTRY = (1, 1)
-SAMPLE_MAZE_EXIT = (19, 14)
-SAMPLE_MAZE_SOLUTION = (
-    (1, 1),
-    (2, 1),
-    (2, 2),
-    (3, 2),
-    (4, 2),
-    (4, 1),
-    (5, 1),
-    (6, 1),
-    (7, 1),
-    (7, 2),
-    (7, 3),
-    (7, 4),
-    (8, 4),
-    (9, 4),
-    (9, 5),
-    (10, 5),
-    (10, 6),
-    (10, 7),
-    (11, 7),
-    (11, 8),
-    (12, 8),
-    (12, 9),
-    (12, 10),
-    (12, 11),
-    (12, 12),
-    (13, 12),
-    (14, 12),
-    (15, 12),
-    (16, 12),
-    (17, 12),
-    (18, 12),
-    (18, 13),
-    (19, 13),
-    (19, 14),
-)
-
-SAMPLE_MAZE = Maze(
-    cells=tuple(
-        tuple(int(cell, 16) for cell in row) for row in SAMPLE_MAZE_ROWS
-    ),
-    entry=SAMPLE_MAZE_ENTRY,
-    exit=SAMPLE_MAZE_EXIT,
-    solution=SAMPLE_MAZE_SOLUTION,
-)
 
 
 def dig_passages(canvas: list[list[str]], maze: Maze) -> None:
@@ -131,7 +68,7 @@ def render_canvas(canvas: list[list[str]]) -> str:
     return "\n".join(lines)
 
 
-def render_maze(maze: Maze) -> str:
+def display_maze(maze: Maze) -> None:
     canvas_width = maze.width * 2 + 1
     canvas_height = maze.height * 2 + 1
 
@@ -142,12 +79,35 @@ def render_maze(maze: Maze) -> str:
     paint_cell(canvas, maze.entry, "entry")
     paint_cell(canvas, maze.exit, "exit")
 
-    return render_canvas(canvas)
+    for coordinate in maze.blocked_cells:
+        paint_cell(canvas, coordinate, "pattern_42")
+
+    return print(render_canvas(canvas))
 
 
-def display_maze(maze: Maze) -> None:
-    print(render_maze(maze))
+def display_color_guide() -> None:
+    entry = f'{BACKGROUND_COLOR["entry"]}{PIXEL}{RESET}'
+    exit_ = f'{BACKGROUND_COLOR["exit"]}{PIXEL}{RESET}'
+
+    color_blocks = [color + PIXEL + RESET for color in WALL_COLORS]
+
+    print()
+    print(f"{entry}: entry     {exit_}: exit")
+    print("Wall color rotation: " + " → ".join(color_blocks))
+    print()
 
 
-if __name__ == "__main__":
-    display_maze(SAMPLE_MAZE)
+def display_menu() -> None:
+    print("=== A-Maze-ing ===")
+    print("1. Regenerate a new maze")
+    print("2. Show / Hide the shortest path")
+    print("3. Rotate the wall colors")
+    print("4. Quit")
+
+
+def rotate_wall_color() -> None:
+    current_color = BACKGROUND_COLOR["wall"]
+    current_index = WALL_COLORS.index(current_color)
+    next_index = (current_index + 1) % len(WALL_COLORS)
+
+    BACKGROUND_COLOR["wall"] = WALL_COLORS[next_index]
