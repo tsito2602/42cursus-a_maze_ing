@@ -25,7 +25,7 @@ def test_parse_valid_config(tmp_path: Path) -> None:
     assert config.width == 20
     assert config.height == 15
     assert config.entry == (0, 0)
-    assert config.exit == (19, 14)
+    assert config.exit_ == (19, 14)
     assert config.output_file == "maze.txt"
     assert config.perfect is True
     assert config.seed == 42

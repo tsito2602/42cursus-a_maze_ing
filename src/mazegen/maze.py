@@ -1,8 +1,17 @@
-from typing import Annotated
+from enum import IntFlag
+from typing import Annotated, TypeAlias
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-Coordinate = tuple[int, int]
+Coordinate: TypeAlias = tuple[int, int]
 Cell = Annotated[int, Field(ge=0, le=0xF)]
+
+
+class Wall(IntFlag):
+    NORTH = 0b0001
+    EAST = 0b0010
+    SOUTH = 0b0100
+    WEST = 0b1000
+    ALL = NORTH | EAST | SOUTH | WEST
 
 
 class Maze(BaseModel):
@@ -12,6 +21,7 @@ class Maze(BaseModel):
     entry: Coordinate
     exit: Coordinate
     solution: tuple[Coordinate, ...] = ()
+    pattern_cells: tuple[Coordinate, ...]
 
     @property
     def width(self) -> int:
@@ -36,6 +46,9 @@ class Maze(BaseModel):
 
         for coordinate in self.solution:
             self._validate_coordinate("SOLUTION", coordinate)
+
+        for coordinate in self.pattern_cells:
+            self._validate_coordinate("PATTERN_CELL", coordinate)
 
         return self
 
