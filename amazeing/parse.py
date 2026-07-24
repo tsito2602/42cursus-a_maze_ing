@@ -1,14 +1,14 @@
 from amazeing.config import MazeConfig
 from mazegen import Coordinate
 
-ALLOWED_KEYS = {
-    "WIDTH",
-    "HEIGHT",
-    "ENTRY",
-    "EXIT",
-    "OUTPUT_FILE",
-    "PERFECT",
-    "SEED",
+CONFIG_FIELDS = {
+    "WIDTH": "width",
+    "HEIGHT": "height",
+    "ENTRY": "entry",
+    "EXIT": "exit_",
+    "OUTPUT_FILE": "output_file",
+    "PERFECT": "perfect",
+    "SEED": "seed",
 }
 
 
@@ -83,13 +83,14 @@ def parse_config(path: str) -> MazeConfig:
             if key in values:
                 raise ValueError(f"Line {line_number}: duplicated key {key}")
 
-            if key not in ALLOWED_KEYS:
+            if key not in CONFIG_FIELDS:
                 raise ValueError(f"Line {line_number}: unknown key {key!r}")
 
             values[key] = value
 
     config_data: dict[str, object] = {
-        key.lower(): parse_value(key, value) for key, value in values.items()
+        CONFIG_FIELDS[key]: parse_value(key, value)
+        for key, value in values.items()
     }
 
     return MazeConfig.model_validate(config_data)
