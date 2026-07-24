@@ -7,7 +7,7 @@ class MazeConfig(BaseModel):
     width: int = Field(ge=1)
     height: int = Field(ge=1)
     entry: tuple[int, int]
-    exit: tuple[int, int]
+    exit_: tuple[int, int]
     output_file: str = Field(min_length=1)
     perfect: bool
     seed: int | None = Field(default=None)
@@ -16,9 +16,9 @@ class MazeConfig(BaseModel):
     def validate_coordinates(self) -> "MazeConfig":
         """Validate that entry and exit are inside the maze."""
         self._validate_coordinate("ENTRY", self.entry)
-        self._validate_coordinate("EXIT", self.exit)
+        self._validate_coordinate("EXIT", self.exit_)
 
-        if self.entry == self.exit:
+        if self.entry == self.exit_:
             raise ValueError(
                 f"ENTRY and EXIT must be different. Both are {self.entry}"
             )
