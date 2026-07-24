@@ -21,18 +21,28 @@ DIRECTIONS: dict[str, tuple[int, int, int, int]] = {
 }
 
 PATTERN_42: list[tuple[int, int]] = [
-    # 4　のところ
-    (0, 0), (2, 0),
-    (0, 1), (2, 1),
-    (0, 2), (1, 2), (2, 2),
+    # 4のところ
+    (0, 0),
+    (2, 0),
+    (0, 1),
+    (2, 1),
+    (0, 2),
+    (1, 2),
+    (2, 2),
     (2, 3),
     (2, 4),
-    # ２のところ
-    (4, 0), (5, 0), (6, 0),
+    # 2のところ
+    (4, 0),
+    (5, 0),
+    (6, 0),
     (6, 1),
-    (4, 2), (5, 2), (6, 2),
+    (4, 2),
+    (5, 2),
+    (6, 2),
     (4, 3),
-    (4, 4), (5, 4), (6, 4),
+    (4, 4),
+    (5, 4),
+    (6, 4),
 ]
 PATTERN_WIDTH = 7
 PATTERN_HEIGHT = 5
@@ -45,7 +55,7 @@ class MazeGenerator:
         height: int,
         entry: tuple[int, int],
         exit_: tuple[int, int],
-        seed: int
+        seed: int | None = None,
     ) -> None:
         self.width = width
         self.height = height
@@ -112,6 +122,7 @@ class MazeGenerator:
             cells=tuple(tuple(row) for row in self.grid),
             entry=self.entry,
             exit=self.exit,
+            blocked_cells=tuple(self.blocked),
         )
 
 
