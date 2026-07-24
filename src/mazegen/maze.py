@@ -21,7 +21,7 @@ class Maze(BaseModel):
     entry: Coordinate
     exit: Coordinate
     solution: tuple[Coordinate, ...] = ()
-    blocked_cells: tuple[Coordinate, ...]
+    pattern_cells: tuple[Coordinate, ...]
 
     @property
     def width(self) -> int:
@@ -47,8 +47,8 @@ class Maze(BaseModel):
         for coordinate in self.solution:
             self._validate_coordinate("SOLUTION", coordinate)
 
-        for coordinate in self.blocked_cells:
-            self._validate_coordinate("BLOCKED_CELL", coordinate)
+        for coordinate in self.pattern_cells:
+            self._validate_coordinate("PATTERN_CELL", coordinate)
 
         return self
 

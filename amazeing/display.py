@@ -12,7 +12,7 @@ WALL_COLORS = (
 BACKGROUND_COLORS = {
     "wall": WALL_COLORS[0],
     "passage": "\x1b[48;5;232m",
-    "pattern_42": "\x1b[48;5;245m",
+    "pattern": "\x1b[48;5;245m",
     "entry": "\x1b[48;5;201m",
     "exit": "\x1b[48;5;196m",
     "path": "\x1b[48;5;141m",
@@ -71,8 +71,8 @@ def _render_maze(maze: Maze) -> str:
     _paint_cell_center(canvas, maze.entry, "entry")
     _paint_cell_center(canvas, maze.exit, "exit")
 
-    for coordinate in maze.blocked_cells:
-        _paint_cell_center(canvas, coordinate, "pattern_42")
+    for coordinate in maze.pattern_cells:
+        _paint_cell_center(canvas, coordinate, "pattern")
 
     return _canvas_to_ansi(canvas)
 

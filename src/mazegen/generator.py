@@ -66,13 +66,13 @@ class MazeGenerator:
         if not self._in_frame(*self.exit):
             raise ValueError("EXIT is outside the maze")
 
-        self.blocked: set[Coordinate] = self._place_42_pattern()
+        self.pattern_cells: set[Coordinate] = self._place_42_pattern()
 
-        if self.entry in self.blocked:
-            raise ValueError("ENTRY in the 42 pattern")
+        if self.entry in self.pattern_cells:
+            raise ValueError("ENTRY overlaps the 42 pattern")
 
-        if self.exit in self.blocked:
-            raise ValueError("EXIT in the 42 pattern")
+        if self.exit in self.pattern_cells:
+            raise ValueError("EXIT overlaps the 42 pattern")
 
         self.visited: set[Coordinate] = set()
 
@@ -109,7 +109,7 @@ class MazeGenerator:
         return result
 
     def generate(self) -> Maze:
-        self.visited = set(self.blocked)
+        self.visited = set(self.pattern_cells)
         self.visited.add(self.entry)
 
         passage: list[Coordinate] = [self.entry]
@@ -135,7 +135,7 @@ class MazeGenerator:
             cells=tuple(tuple(row) for row in self.grid),
             entry=self.entry,
             exit=self.exit,
-            blocked_cells=tuple(self.blocked),
+            pattern_cells=tuple(self.pattern_cells),
         )
 
 
