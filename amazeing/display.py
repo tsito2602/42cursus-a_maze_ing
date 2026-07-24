@@ -1,6 +1,6 @@
 """Render and display mazes in an ANSI-capable terminal."""
 
-from mazegen import Maze, Wall
+from mazegen import Maze, Wall, Coordinate
 
 WALL_COLORS = (
     "\x1b[48;5;252m",  # white
@@ -24,7 +24,6 @@ RESET = "\x1b[0m"
 CLEAR_SCREEN = "\x1b[2J\x1b[H"
 
 Canvas = list[list[str]]
-Coordinate = tuple[int, int]
 
 
 def display_maze(maze: Maze) -> None:

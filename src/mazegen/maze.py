@@ -1,8 +1,8 @@
 from enum import IntFlag
-from typing import Annotated
+from typing import Annotated, TypeAlias
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-Coordinate = tuple[int, int]
+Coordinate: TypeAlias = tuple[int, int]
 Cell = Annotated[int, Field(ge=0, le=0xF)]
 
 

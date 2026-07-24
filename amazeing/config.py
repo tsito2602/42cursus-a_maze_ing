@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from mazegen.maze import Coordinate
 
 
 class MazeConfig(BaseModel):
@@ -6,8 +7,8 @@ class MazeConfig(BaseModel):
 
     width: int = Field(ge=1)
     height: int = Field(ge=1)
-    entry: tuple[int, int]
-    exit_: tuple[int, int]
+    entry: Coordinate
+    exit_: Coordinate
     output_file: str = Field(min_length=1)
     perfect: bool
     seed: int | None = Field(default=None)
@@ -25,9 +26,7 @@ class MazeConfig(BaseModel):
 
         return self
 
-    def _validate_coordinate(
-        self, key: str, coordinate: tuple[int, int]
-    ) -> None:
+    def _validate_coordinate(self, key: str, coordinate: Coordinate) -> None:
         """Validate one coordinate against the maze bounds."""
         x, y = coordinate
         if 0 <= x < self.width and 0 <= y < self.height:

@@ -1,4 +1,5 @@
 from amazeing.config import MazeConfig
+from mazegen import Coordinate
 
 ALLOWED_KEYS = {
     "WIDTH",
@@ -18,7 +19,7 @@ def parse_int(key: str, value: str) -> int:
         raise ValueError(f"Invalid integer for {key}: {value!r}") from e
 
 
-def parse_coordinate(key: str, value: str) -> tuple[int, int]:
+def parse_coordinate(key: str, value: str) -> Coordinate:
     parts = value.split(",")
 
     if len(parts) != 2:

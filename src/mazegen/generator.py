@@ -1,5 +1,5 @@
 import random
-from .maze import Maze, Wall
+from .maze import Maze, Wall, Coordinate
 
 WIDTH = 20
 HEIGHT = 15
@@ -14,7 +14,7 @@ DIRECTIONS: dict[str, tuple[int, int, int, int]] = {
     "W": (-1, 0, Wall.WEST, Wall.EAST),
 }
 
-PATTERN_42: list[tuple[int, int]] = [
+PATTERN_42: list[Coordinate] = [
     # 4のところ
     (0, 0),
     (2, 0),
@@ -47,8 +47,8 @@ class MazeGenerator:
         self,
         width: int,
         height: int,
-        entry: tuple[int, int],
-        exit_: tuple[int, int],
+        entry: Coordinate,
+        exit_: Coordinate,
         seed: int | None = None,
     ) -> None:
         self.width = width
@@ -66,7 +66,7 @@ class MazeGenerator:
         if not self._in_frame(*self.exit):
             raise ValueError("EXIT is outside the maze")
 
-        self.blocked: set[tuple[int, int]] = self._place_42_pattern()
+        self.blocked: set[Coordinate] = self._place_42_pattern()
 
         if self.entry in self.blocked:
             raise ValueError("ENTRY in the 42 pattern")
@@ -74,7 +74,7 @@ class MazeGenerator:
         if self.exit in self.blocked:
             raise ValueError("EXIT in the 42 pattern")
 
-        self.visited: set[tuple[int, int]] = set()
+        self.visited: set[Coordinate] = set()
 
     def _in_frame(self, x: int, y: int) -> bool:
         if 0 <= x < self.width and 0 <= y < self.height:
@@ -82,7 +82,7 @@ class MazeGenerator:
         else:
             return False
 
-    def _place_42_pattern(self) -> set[tuple[int, int]]:
+    def _place_42_pattern(self) -> set[Coordinate]:
         if self.width < PATTERN_WIDTH + 2 or self.height < PATTERN_HEIGHT + 2:
             print("error :42 pattern is too big for the maze size  ")
             return set()
@@ -112,7 +112,7 @@ class MazeGenerator:
         self.visited = set(self.blocked)
         self.visited.add(self.entry)
 
-        passage: list[tuple[int, int]] = [self.entry]
+        passage: list[Coordinate] = [self.entry]
 
         while passage:
             x, y = passage[-1]
