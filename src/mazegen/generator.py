@@ -1,10 +1,12 @@
 import random
+from typing import TypeAlias
 from .maze import Maze, Wall, Coordinate
 
 WIDTH = 20
 HEIGHT = 15
 ENTRY = (0, 0)
 EXIT = (19, 14)
+PERFECT = True
 SEED = 42
 
 DIRECTIONS: dict[str, tuple[int, int, int, int]] = {
@@ -41,6 +43,10 @@ PATTERN_42: list[Coordinate] = [
 PATTERN_WIDTH = 7
 PATTERN_HEIGHT = 5
 
+EXTRA_WALLS_RATIO = 0.3
+
+WallCandidate: TypeAlias = tuple[int, int, str]
+
 
 class MazeGenerator:
     def __init__(
@@ -49,12 +55,14 @@ class MazeGenerator:
         height: int,
         entry: Coordinate,
         exit_: Coordinate,
+        perfect: bool = True,
         seed: int | None = None,
     ) -> None:
         self.width = width
         self.height = height
         self.entry = entry
         self.exit = exit_
+        self.perfect = perfect
         self.rng = random.Random(seed)
         self.grid: list[list[int]] = [
             [Wall.ALL] * width for _ in range(height)
@@ -109,6 +117,21 @@ class MazeGenerator:
         return result
 
     def generate(self) -> Maze:
+        """Generate a perfect or imperfect maze from the current settings."""
+        self._generate_perfect_maze()
+
+        if not self.perfect:
+            self._open_extra_walls()
+
+        return Maze(
+            cells=tuple(tuple(row) for row in self.grid),
+            entry=self.entry,
+            exit=self.exit,
+            pattern_cells=tuple(self.pattern_cells),
+        )
+
+    def _generate_perfect_maze(self) -> None:
+        """Generate a perfect maze using randomized depth-first search."""
         self.visited = set(self.pattern_cells)
         self.visited.add(self.entry)
 
@@ -131,15 +154,105 @@ class MazeGenerator:
             self.visited.add((nx, ny))
             passage.append((nx, ny))
 
-        return Maze(
-            cells=tuple(tuple(row) for row in self.grid),
-            entry=self.entry,
-            exit=self.exit,
-            pattern_cells=tuple(self.pattern_cells),
-        )
+    def _openable_walls(self) -> list[WallCandidate]:
+        """Return closed walls that can be opened outside the 42 pattern."""
+        candidates: list[WallCandidate] = []
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) in self.pattern_cells:
+                    continue
+
+                if (
+                    x + 1 < self.width
+                    and (x + 1, y) not in self.pattern_cells
+                    and self.grid[y][x] & Wall.EAST
+                ):
+                    candidates.append((x, y, "E"))
+
+                if (
+                    y + 1 < self.height
+                    and (x, y + 1) not in self.pattern_cells
+                    and self.grid[y][x] & Wall.SOUTH
+                ):
+                    candidates.append((x, y, "S"))
+
+        return candidates
+
+    def _open_wall(self, candidate: WallCandidate) -> None:
+        """Open a shared wall on both adjacent cells."""
+        x, y, direction = candidate
+        dx, dy, wall, opposite = DIRECTIONS[direction]
+        nx, ny = x + dx, y + dy
+
+        self.grid[y][x] &= ~wall
+        self.grid[ny][nx] &= ~opposite
+
+    def _close_wall(self, candidate: WallCandidate) -> None:
+        """Close a shared wall on both adjacent cells."""
+        x, y, direction = candidate
+        dx, dy, wall, opposite = DIRECTIONS[direction]
+        nx, ny = x + dx, y + dy
+
+        self.grid[y][x] |= wall
+        self.grid[ny][nx] |= opposite
+
+    def _is_open_3x3(self, start_x: int, start_y: int) -> bool:
+        """Check whether one 3-by-3 area has no internal walls."""
+        for y in range(start_y, start_y + 3):
+            for x in range(start_x, start_x + 2):
+                if self.grid[y][x] & Wall.EAST:
+                    return False
+
+        for y in range(start_y, start_y + 2):
+            for x in range(start_x, start_x + 3):
+                if self.grid[y][x] & Wall.SOUTH:
+                    return False
+
+        return True
+
+    def _has_open_3x3(self) -> bool:
+        """Check whether the maze contains a fully open 3-by-3 area."""
+        if self.width < 3 or self.height < 3:
+            return False
+
+        for y in range(self.height - 2):
+            for x in range(self.width - 2):
+                if self._is_open_3x3(x, y):
+                    return True
+
+        return False
+
+    def _get_openable_cnt(self) -> int:
+        """Calculate the target number of extra walls to open."""
+        usable_cells = self.width * self.height - len(self.pattern_cells)
+        return max(1, int(usable_cells * EXTRA_WALLS_RATIO))
+
+    def _open_extra_walls(self) -> None:
+        """Open extra walls without creating a fully open 3-by-3 area."""
+        candidates = self._openable_walls()
+        self.rng.shuffle(candidates)
+
+        openable = self._get_openable_cnt()
+        opened = 0
+
+        for candidate in candidates:
+            self._open_wall(candidate)
+
+            if self._has_open_3x3():
+                self._close_wall(candidate)
+                continue
+
+            opened += 1
+
+            if opened >= openable:
+                break
+
+        if opened == 0:
+            raise ValueError("Cannot generate imperfect maze.")
 
 
 if __name__ == "__main__":
-    generator = MazeGenerator(WIDTH, HEIGHT, ENTRY, EXIT, SEED)
+    generator = MazeGenerator(WIDTH, HEIGHT, ENTRY, EXIT, PERFECT, SEED)
     maze = generator.generate()
     print(maze)
