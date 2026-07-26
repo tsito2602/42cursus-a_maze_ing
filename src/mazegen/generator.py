@@ -11,9 +11,7 @@ SEED = 42
 PATTERN_42: list[Coordinate] = [
     # 4のところ
     (0, 0),
-    (2, 0),
     (0, 1),
-    (2, 1),
     (0, 2),
     (1, 2),
     (2, 2),
@@ -45,7 +43,7 @@ class MazeGenerator:
         exit_: Coordinate,
         seed: int | None = None,
     ) -> None:
-        """Set up an empty walled grid with entry/exit and the 42 pattern placed."""
+        """Set up a walled grid with entry/exit and the 42 pattern placed."""
         self.width = width
         self.height = height
         self.entry = entry
@@ -134,7 +132,13 @@ class MazeGenerator:
             pattern_cells=tuple(self.pattern_cells),
         )
 
-        return Solver(maze).solve()
+        return Maze(
+            cells=tuple(tuple(row) for row in self.grid),
+            entry=self.entry,
+            exit=self.exit,
+            pattern_cells=tuple(self.pattern_cells),
+            solution=Solver(maze).solve(),
+        )
 
 
 if __name__ == "__main__":
