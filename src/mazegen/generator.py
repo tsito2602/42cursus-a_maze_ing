@@ -11,7 +11,7 @@ PERFECT = True
 SEED = 42
 
 PATTERN_42: list[Coordinate] = [
-    # 4のところ
+    # coordinates of 4
     (0, 0),
     (0, 1),
     (0, 2),
@@ -19,7 +19,7 @@ PATTERN_42: list[Coordinate] = [
     (2, 2),
     (2, 3),
     (2, 4),
-    # 2のところ
+    # coordinates of 2
     (4, 0),
     (5, 0),
     (6, 0),
