@@ -1,7 +1,7 @@
 import random
 from typing import TypeAlias
 from .maze import DIRECTIONS, Maze, Wall, Coordinate
-from .solver import Solver
+from .solve import solve
 
 WIDTH = 20
 HEIGHT = 15
@@ -121,7 +121,7 @@ class MazeGenerator:
             entry=self.entry,
             exit=self.exit,
             pattern_cells=tuple(self.pattern_cells),
-            solution=Solver(maze).solve(),
+            solution=solve(self.grid, self.entry, self.exit),
         )
 
     def _generate_perfect_maze(self) -> None:
