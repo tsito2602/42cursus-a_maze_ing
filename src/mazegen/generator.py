@@ -1,5 +1,6 @@
 import random
-from .maze import Maze, Wall, Coordinate
+from .maze import DIRECTIONS, Maze, Wall, Coordinate
+from .solver import Solver
 
 WIDTH = 20
 HEIGHT = 15
@@ -7,19 +8,10 @@ ENTRY = (0, 0)
 EXIT = (19, 14)
 SEED = 42
 
-DIRECTIONS: dict[str, tuple[int, int, int, int]] = {
-    "N": (0, -1, Wall.NORTH, Wall.SOUTH),
-    "E": (1, 0, Wall.EAST, Wall.WEST),
-    "S": (0, 1, Wall.SOUTH, Wall.NORTH),
-    "W": (-1, 0, Wall.WEST, Wall.EAST),
-}
-
 PATTERN_42: list[Coordinate] = [
     # 4のところ
     (0, 0),
-    (2, 0),
     (0, 1),
-    (2, 1),
     (0, 2),
     (1, 2),
     (2, 2),
@@ -51,6 +43,7 @@ class MazeGenerator:
         exit_: Coordinate,
         seed: int | None = None,
     ) -> None:
+        """Set up a walled grid with entry/exit and the 42 pattern placed."""
         self.width = width
         self.height = height
         self.entry = entry
@@ -77,12 +70,14 @@ class MazeGenerator:
         self.visited: set[Coordinate] = set()
 
     def _in_frame(self, x: int, y: int) -> bool:
+        """Check whether (x, y) lies within the maze bounds."""
         if 0 <= x < self.width and 0 <= y < self.height:
             return True
         else:
             return False
 
     def _place_42_pattern(self) -> set[Coordinate]:
+        """Return the cell coordinates that make up the centered 42 pattern."""
         if self.width < PATTERN_WIDTH + 2 or self.height < PATTERN_HEIGHT + 2:
             print("error :42 pattern is too big for the maze size  ")
             return set()
@@ -93,22 +88,21 @@ class MazeGenerator:
         return {(off_x + x, off_y + y) for (x, y) in PATTERN_42}
 
     def _unvisited_neighbours(self, x: int, y: int) -> list[str]:
+        """Return the directions from (x, y) leading to an unvisited cell."""
         result: list[str] = []
 
         for name, (dx, dy, _, _) in DIRECTIONS.items():
             nx, ny = x + dx, y + dy
-
             if not (0 <= nx < self.width and 0 <= ny < self.height):
                 continue
-
             if (nx, ny) in self.visited:
                 continue
-
             result.append(name)
 
         return result
 
     def generate(self) -> Maze:
+        """Carve a maze via randomized backtracking and return it, solved."""
         self.visited = set(self.pattern_cells)
         self.visited.add(self.entry)
 
@@ -131,11 +125,19 @@ class MazeGenerator:
             self.visited.add((nx, ny))
             passage.append((nx, ny))
 
+        maze = Maze(
+            cells=tuple(tuple(row) for row in self.grid),
+            entry=self.entry,
+            exit=self.exit,
+            pattern_cells=tuple(self.pattern_cells),
+        )
+
         return Maze(
             cells=tuple(tuple(row) for row in self.grid),
             entry=self.entry,
             exit=self.exit,
             pattern_cells=tuple(self.pattern_cells),
+            solution=Solver(maze).solve(),
         )
 
 

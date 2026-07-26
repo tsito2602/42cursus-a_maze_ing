@@ -14,6 +14,14 @@ class Wall(IntFlag):
     ALL = NORTH | EAST | SOUTH | WEST
 
 
+DIRECTIONS: dict[str, tuple[int, int, Wall, Wall]] = {
+    "N": (0, -1, Wall.NORTH, Wall.SOUTH),
+    "E": (1, 0, Wall.EAST, Wall.WEST),
+    "S": (0, 1, Wall.SOUTH, Wall.NORTH),
+    "W": (-1, 0, Wall.WEST, Wall.EAST),
+}
+
+
 class Maze(BaseModel):
     model_config = ConfigDict(frozen=True)
 
