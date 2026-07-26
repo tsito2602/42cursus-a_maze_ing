@@ -6,7 +6,7 @@ CONFIG = MazeConfig(
     entry=(0, 0),
     exit_=(19, 14),
     output_file="maze.txt",
-    perfect=True,
+    perfect=False,
     seed=42,
 )
 
