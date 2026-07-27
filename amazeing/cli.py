@@ -47,6 +47,7 @@ def _generate_maze(
         height=config.height,
         entry=config.entry,
         exit_=config.exit_,
+        perfect=config.perfect,
         seed=seed,
     )
 
