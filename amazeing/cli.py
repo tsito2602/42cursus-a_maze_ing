@@ -1,3 +1,4 @@
+from amazeing.output import output_maze
 from mazegen import Maze, MazeGenerator
 
 from .config import MazeConfig
@@ -12,6 +13,7 @@ from .display import (
 
 def run(config: MazeConfig) -> None:
     maze = _generate_maze(config, config.seed)
+    output_maze(maze, config.output_file)
 
     while True:
         print(CLEAR_SCREEN, end="")
