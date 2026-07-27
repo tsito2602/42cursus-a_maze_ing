@@ -1,3 +1,4 @@
+from typing import TypeAlias
 import pytest
 from mazegen import Wall
 from mazegen.solve import solve
@@ -5,9 +6,11 @@ from mazegen.solve import solve
 ENTRY = (0, 0)
 EXIT = (1, 0)
 
+Cells: TypeAlias = list[list[int]]
+
 
 def test_solve_finds_path_between_entry_and_exit() -> None:
-    cells: list[list[int]] = [
+    cells: Cells = [
         [Wall.ALL & ~Wall.EAST, Wall.ALL & ~Wall.WEST],
     ]
     path = solve(cells, ENTRY, EXIT)
@@ -17,7 +20,7 @@ def test_solve_finds_path_between_entry_and_exit() -> None:
 
 
 def test_solve_path_is_a_valid_connected_walk() -> None:
-    cells: list[list[int]] = [
+    cells: Cells = [
         [Wall.ALL & ~Wall.EAST, Wall.ALL & ~Wall.WEST],
     ]
     path = solve(cells, ENTRY, EXIT)
@@ -27,7 +30,7 @@ def test_solve_path_is_a_valid_connected_walk() -> None:
 
 
 def test_solve_raises_when_exit_is_unreachable() -> None:
-    cells: list[list[int]] = [
+    cells: Cells = [
         [Wall.ALL, Wall.ALL],
     ]
 
@@ -36,14 +39,14 @@ def test_solve_raises_when_exit_is_unreachable() -> None:
 
 
 def test_solve_trivial_maze_where_entry_equals_exit() -> None:
-    cells: list[list[int]] = [[Wall.ALL]]
+    cells: Cells = [[Wall.ALL]]
     path = solve(cells, (0, 0), (0, 0))
 
     assert path == ((0, 0),)
 
 
 def test_solve_returns_the_shortest_route_around_a_loop() -> None:
-    cells: list[list[int]] = [[Wall.ALL] * 3 for _ in range(3)]
+    cells: Cells = [[Wall.ALL] * 3 for _ in range(3)]
 
     def link(
         x1: int, y1: int, wall: Wall,
