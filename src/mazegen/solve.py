@@ -1,5 +1,5 @@
 from collections import deque
-from .maze import DIRECTIONS, Coordinate, Maze
+from .maze import DIRECTIONS, Coordinate
 
 
 def solve(
