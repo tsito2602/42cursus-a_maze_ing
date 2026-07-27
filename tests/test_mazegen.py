@@ -14,7 +14,7 @@ def test_seed() -> None:
     second = MazeGenerator(WIDTH, HEIGHT, ENTRY, EXIT, True, SEED)
     second.generate()
 
-    assert first.grid == second.grid
+    assert first.cells == second.cells
 
 
 def test_outer_walls() -> None:
@@ -22,11 +22,11 @@ def test_outer_walls() -> None:
     maze.generate()
 
     for x in range(WIDTH):
-        assert maze.grid[0][x] & Wall.NORTH
-        assert maze.grid[HEIGHT - 1][x] & Wall.SOUTH
+        assert maze.cells[0][x] & Wall.NORTH
+        assert maze.cells[HEIGHT - 1][x] & Wall.SOUTH
     for y in range(HEIGHT):
-        assert maze.grid[y][0] & Wall.WEST
-        assert maze.grid[y][WIDTH - 1] & Wall.EAST
+        assert maze.cells[y][0] & Wall.WEST
+        assert maze.cells[y][WIDTH - 1] & Wall.EAST
 
 
 def test_generate_returns_maze() -> None:
@@ -45,7 +45,7 @@ def test_generate_dimensions_match_grid() -> None:
 
     assert result.width == WIDTH
     assert result.height == HEIGHT
-    assert result.cells == tuple(tuple(row) for row in generator.grid)
+    assert result.cells == tuple(tuple(row) for row in generator.cells)
 
 
 def test_imperfect_maze_opens_extra_walls() -> None:
@@ -85,14 +85,14 @@ def _count_open_passages(generator: MazeGenerator) -> int:
             if (
                 x + 1 < generator.width
                 and (x + 1, y) not in generator.pattern_cells
-                and not generator.grid[y][x] & Wall.EAST
+                and not generator.cells[y][x] & Wall.EAST
             ):
                 count += 1
 
             if (
                 y + 1 < generator.height
                 and (x, y + 1) not in generator.pattern_cells
-                and not generator.grid[y][x] & Wall.SOUTH
+                and not generator.cells[y][x] & Wall.SOUTH
             ):
                 count += 1
 
@@ -112,7 +112,7 @@ def test_imperfect_maze_keeps_42_cells_closed() -> None:
     generator.generate()
 
     for x, y in generator.pattern_cells:
-        assert generator.grid[y][x] == Wall.ALL
+        assert generator.cells[y][x] == Wall.ALL
 
 
 def test_imperfect_maze_is_reproducible() -> None:
@@ -137,7 +137,7 @@ def test_imperfect_maze_is_reproducible() -> None:
     )
     second.generate()
 
-    assert first.grid == second.grid
+    assert first.cells == second.cells
 
 
 def test_imperfect_maze_walls_are_symmetric() -> None:
@@ -155,13 +155,13 @@ def test_imperfect_maze_walls_are_symmetric() -> None:
     for y in range(HEIGHT):
         for x in range(WIDTH):
             if x + 1 < WIDTH:
-                east = bool(generator.grid[y][x] & Wall.EAST)
-                west = bool(generator.grid[y][x + 1] & Wall.WEST)
+                east = bool(generator.cells[y][x] & Wall.EAST)
+                west = bool(generator.cells[y][x + 1] & Wall.WEST)
                 assert east == west
 
             if y + 1 < HEIGHT:
-                south = bool(generator.grid[y][x] & Wall.SOUTH)
-                north = bool(generator.grid[y + 1][x] & Wall.NORTH)
+                south = bool(generator.cells[y][x] & Wall.SOUTH)
+                north = bool(generator.cells[y + 1][x] & Wall.NORTH)
                 assert south == north
 
 
