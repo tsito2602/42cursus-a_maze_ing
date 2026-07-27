@@ -1,6 +1,7 @@
 from pytest import CaptureFixture, MonkeyPatch
 import amazeing.cli as cli
 from amazeing import MazeConfig
+from amazeing.display import Display
 from mazegen import Maze, Wall
 
 
@@ -60,7 +61,7 @@ def test_run_handles_menu_actions(
         """Return the next predefined menu choice."""
         return next(choices)
 
-    def fake_rotate_wall_color() -> None:
+    def fake_rotate_wall_color(_: Display) -> None:
         """Record one wall-color rotation."""
         nonlocal rotation_count
         rotation_count += 1
@@ -71,10 +72,10 @@ def test_run_handles_menu_actions(
 
     monkeypatch.setattr(cli, "_generate_maze", fake_generate_maze)
     monkeypatch.setattr(cli, "_read_menu_choice", fake_read_menu_choice)
-    monkeypatch.setattr(cli, "rotate_wall_color", fake_rotate_wall_color)
-    monkeypatch.setattr(cli, "display_maze", do_nothing)
-    monkeypatch.setattr(cli, "display_color_guide", do_nothing)
-    monkeypatch.setattr(cli, "display_menu", do_nothing)
+    monkeypatch.setattr(Display, "rotate_wall_color", fake_rotate_wall_color)
+    monkeypatch.setattr(Display, "display_maze", do_nothing)
+    monkeypatch.setattr(Display, "display_color_guide", do_nothing)
+    monkeypatch.setattr(Display, "display_menu", do_nothing)
     monkeypatch.setattr(cli, "CLEAR_SCREEN", "")
 
     cli.run(config)
