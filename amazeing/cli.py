@@ -2,39 +2,35 @@ from amazeing.output import output_maze
 from mazegen import Maze, MazeGenerator
 
 from .config import MazeConfig
-from .display import (
-    CLEAR_SCREEN,
-    display_color_guide,
-    display_maze,
-    display_menu,
-    rotate_wall_color,
-)
+from .display import CLEAR_SCREEN, Display
 
 
 def run(config: MazeConfig) -> None:
     maze = _generate_maze(config, config.seed)
     output_maze(maze, config.output_file)
+    display = Display(maze)
 
     while True:
         print(CLEAR_SCREEN, end="")
-        display_maze(maze)
-        display_color_guide()
-        display_menu()
+        display.display_maze()
+        display.display_color_guide()
+        display.display_menu()
 
         choice = _read_menu_choice()
 
         match choice:
             case "1":
-                maze = _generate_maze(
+                new_maze = _generate_maze(
                     config,
                     seed=None,
                 )
+                display.update_maze(new_maze)
 
             case "2":
-                pass
+                display.toggle_show_solution()
 
             case "3":
-                rotate_wall_color()
+                display.rotate_wall_color()
 
             case "4":
                 return
