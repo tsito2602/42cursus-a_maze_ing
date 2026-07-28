@@ -13,13 +13,14 @@ def test_read_menu_choice_retries_invalid_input(
     choices = iter(("x", "5", "3"))
 
     monkeypatch.setattr(
-        "builtins.input",
-        lambda _: next(choices),
+        cli,
+        "_read_key",
+        lambda: next(choices),
     )
 
     result = cli._read_menu_choice()
 
-    error_message = "Please enter 1, 2, 3, or 4.\n"
+    error_message = "Please enter W, A, S, D or 1-4.\n"
 
     assert result == "3"
     assert capsys.readouterr().out == error_message * 2
