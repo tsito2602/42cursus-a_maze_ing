@@ -96,14 +96,15 @@ class Display:
             segment_y = (previous_y + current_y) // 2
             canvas[segment_y][segment_x] = "path"
 
-    def _render_maze(self) -> str:
+    def _render_player(self, canvas: Canvas, position: Coordinate) -> None:
+        x, y = position
+        canvas[y][x] = "player"
+
+    def _render_maze(self, player_pos: Coordinate) -> str:
         """Render a maze as an ANSI-colored string."""
         canvas = self._create_canvas()
 
         self._mark_passages(canvas)
-
-        self._paint_cell_center(canvas, self.maze.entry, "entry")
-        self._paint_cell_center(canvas, self.maze.exit, "exit")
 
         for coordinate in self.maze.pattern_cells:
             self._paint_cell_center(canvas, coordinate, "pattern")
@@ -111,27 +112,34 @@ class Display:
         if self.show_solution:
             self._render_solution(canvas)
 
+        self._paint_cell_center(canvas, self.maze.entry, "entry")
+        self._paint_cell_center(canvas, self.maze.exit, "exit")
+
+        self._render_player(canvas, player_pos)
+
         return self._canvas_to_ansi(canvas)
 
-    def display_maze(self) -> None:
+    def display_maze(self, player_pos: Coordinate) -> None:
         """Print a rendered maze to the terminal."""
-        print(self._render_maze())
+        print(self._render_maze(player_pos))
 
     def display_color_guide(self) -> None:
         """Display the meaning and rotation order of maze colors."""
         entry = f'{self.bg_colors["entry"]}{PIXEL}{RESET}'
         exit_ = f'{self.bg_colors["exit"]}{PIXEL}{RESET}'
+        player = f'{self.bg_colors["player"]}{PIXEL}{RESET}'
 
         color_blocks = [color + PIXEL + RESET for color in WALL_COLORS]
 
         print()
-        print(f"{entry}: entry     {exit_}: exit")
+        print(f"{entry}: Entry     {exit_}: Exit     {player}: Player")
         print("Wall color rotation: " + " → ".join(color_blocks))
         print()
 
     def display_menu(self) -> None:
         """Display the interactive menu options."""
         print("=== A-Maze-ing ===")
+        print("W/A/S/D: Player moves")
         print("1. Regenerate a new maze")
         print("2. Show / Hide the shortest path")
         print("3. Rotate the wall colors")
