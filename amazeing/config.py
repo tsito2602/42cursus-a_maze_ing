@@ -3,6 +3,8 @@ from mazegen.maze import Coordinate
 
 
 class MazeConfig(BaseModel):
+    """Store validated settings used to generate and save a maze."""
+
     model_config = ConfigDict(extra="forbid", strict=True)
 
     width: int = Field(ge=1)

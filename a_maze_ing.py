@@ -14,6 +14,7 @@ CONFIG = MazeConfig(
 
 
 def main() -> None:
+    """Parse the command-line configuration path and start the application."""
     if len(sys.argv) != 2:
         print("Usage: a_maze_ing.py <file>")
         return

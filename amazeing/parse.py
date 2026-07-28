@@ -13,6 +13,7 @@ CONFIG_FIELDS = {
 
 
 def parse_int(key: str, value: str) -> int:
+    """Parse an integer value and report the associated configuration key."""
     try:
         return int(value)
     except ValueError as e:
@@ -20,6 +21,7 @@ def parse_int(key: str, value: str) -> int:
 
 
 def parse_coordinate(key: str, value: str) -> Coordinate:
+    """Parse an x,y configuration value into a coordinate."""
     parts = value.split(",")
 
     if len(parts) != 2:
@@ -37,6 +39,7 @@ def parse_coordinate(key: str, value: str) -> Coordinate:
 
 
 def parse_bool(key: str, value: str) -> bool:
+    """Parse the exact configuration values True or False."""
     if value == "True":
         return True
 
@@ -49,6 +52,7 @@ def parse_bool(key: str, value: str) -> bool:
 
 
 def parse_value(key: str, value: str) -> object:
+    """Convert a raw configuration value according to its key."""
     match key:
         case "WIDTH" | "HEIGHT" | "SEED":
             return parse_int(key, value)
@@ -64,6 +68,7 @@ def parse_value(key: str, value: str) -> object:
 
 
 def parse_config(path: str) -> MazeConfig:
+    """Read a configuration file and return its validated settings."""
     values: dict[str, str] = {}
 
     with open(path, encoding="utf-8") as file:

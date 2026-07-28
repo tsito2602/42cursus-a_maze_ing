@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pytest import CaptureFixture, MonkeyPatch
 import amazeing.cli as cli
 from amazeing import MazeConfig
@@ -13,13 +15,14 @@ def test_read_menu_choice_retries_invalid_input(
     choices = iter(("x", "5", "3"))
 
     monkeypatch.setattr(
-        "builtins.input",
-        lambda _: next(choices),
+        cli,
+        "_read_key",
+        lambda: next(choices),
     )
 
     result = cli._read_menu_choice()
 
-    error_message = "Please enter 1, 2, 3, or 4.\n"
+    error_message = "Please enter W, A, S, D or 1-4.\n"
 
     assert result == "3"
     assert capsys.readouterr().out == error_message * 2
@@ -57,7 +60,7 @@ def test_run_handles_menu_actions(
         generated_seeds.append(seed)
         return maze
 
-    def fake_read_menu_choice() -> str:
+    def fake_read_key() -> str:
         """Return the next predefined menu choice."""
         return next(choices)
 
@@ -71,7 +74,7 @@ def test_run_handles_menu_actions(
         pass
 
     monkeypatch.setattr(cli, "_generate_maze", fake_generate_maze)
-    monkeypatch.setattr(cli, "_read_menu_choice", fake_read_menu_choice)
+    monkeypatch.setattr(cli, "_read_key", fake_read_key)
     monkeypatch.setattr(Display, "rotate_wall_color", fake_rotate_wall_color)
     monkeypatch.setattr(Display, "display_maze", do_nothing)
     monkeypatch.setattr(Display, "display_color_guide", do_nothing)
@@ -82,3 +85,54 @@ def test_run_handles_menu_actions(
 
     assert generated_seeds == [42, None]
     assert rotation_count == 1
+
+
+def test_run_moves_player_to_exit(
+    monkeypatch: MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """Move the player to the exit and show the clear screen."""
+    config = MazeConfig(
+        width=2,
+        height=1,
+        entry=(0, 0),
+        exit_=(1, 0),
+        output_file=str(tmp_path / "maze.txt"),
+        perfect=True,
+        seed=42,
+    )
+    maze = Maze(
+        cells=(
+            (
+                int(Wall.NORTH | Wall.SOUTH | Wall.WEST),
+                int(Wall.NORTH | Wall.EAST | Wall.SOUTH),
+            ),
+        ),
+        entry=(0, 0),
+        exit=(1, 0),
+        pattern_cells=(),
+    )
+    choices = iter(("d", "d", "4"))
+    displayed_positions: list[tuple[int, int] | None] = []
+
+    def fake_display_maze(
+        _: Display,
+        player_position: tuple[int, int] | None = None,
+    ) -> None:
+        """Record each displayed player position."""
+        displayed_positions.append(player_position)
+
+    def do_nothing(*_: object) -> None:
+        """Ignore display calls during the CLI test."""
+        pass
+
+    monkeypatch.setattr(cli, "_generate_maze", lambda *_: maze)
+    monkeypatch.setattr(cli, "_read_key", lambda: next(choices))
+    monkeypatch.setattr(Display, "display_maze", fake_display_maze)
+    monkeypatch.setattr(Display, "display_color_guide", do_nothing)
+    monkeypatch.setattr(Display, "display_menu", do_nothing)
+    monkeypatch.setattr(cli, "CLEAR_SCREEN", "")
+
+    cli.run(config)
+
+    assert displayed_positions == [(1, 1), (2, 1), (3, 1)]

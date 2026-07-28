@@ -7,6 +7,8 @@ Cell = Annotated[int, Field(ge=0, le=0xF)]
 
 
 class Wall(IntFlag):
+    """Represent the four walls surrounding a maze cell."""
+
     NORTH = 0b0001
     EAST = 0b0010
     SOUTH = 0b0100
@@ -23,6 +25,8 @@ DIRECTIONS: dict[str, tuple[int, int, Wall, Wall]] = {
 
 
 class Maze(BaseModel):
+    """Store an immutable, validated maze and its solved path."""
+
     model_config = ConfigDict(frozen=True)
 
     cells: tuple[tuple[Cell, ...], ...]
@@ -33,14 +37,17 @@ class Maze(BaseModel):
 
     @property
     def width(self) -> int:
+        """Return the maze width in cells."""
         return len(self.cells[0])
 
     @property
     def height(self) -> int:
+        """Return the maze height in cells."""
         return len(self.cells)
 
     @model_validator(mode="after")
     def validate_maze(self) -> "Maze":
+        """Validate grid shape and every stored coordinate."""
         if not self.cells or not self.cells[0]:
             raise ValueError("Maze must contain at least one cell")
 
@@ -65,6 +72,7 @@ class Maze(BaseModel):
         name: str,
         coordinate: Coordinate,
     ) -> None:
+        """Raise an error when a coordinate lies outside the maze."""
         x, y = coordinate
 
         if not (0 <= x < self.width and 0 <= y < self.height):
