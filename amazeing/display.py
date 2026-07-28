@@ -100,7 +100,7 @@ class Display:
         x, y = position
         canvas[y][x] = "player"
 
-    def _render_maze(self, player_pos: Coordinate) -> str:
+    def _render_maze(self, player_pos: Coordinate | None = None) -> str:
         """Render a maze as an ANSI-colored string."""
         canvas = self._create_canvas()
 
@@ -115,11 +115,12 @@ class Display:
         self._paint_cell_center(canvas, self.maze.entry, "entry")
         self._paint_cell_center(canvas, self.maze.exit, "exit")
 
-        self._render_player(canvas, player_pos)
+        if player_pos is not None:
+            self._render_player(canvas, player_pos)
 
         return self._canvas_to_ansi(canvas)
 
-    def display_maze(self, player_pos: Coordinate) -> None:
+    def display_maze(self, player_pos: Coordinate | None = None) -> None:
         """Print a rendered maze to the terminal."""
         print(self._render_maze(player_pos))
 
