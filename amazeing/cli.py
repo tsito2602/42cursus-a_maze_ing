@@ -14,6 +14,7 @@ RESET = "\x1b[0m"
 
 
 def run(config: MazeConfig) -> None:
+    """Run the interactive maze application until the user quits."""
     maze = _generate_maze(config, config.seed)
     output_maze(maze, config.output_file)
     display = Display(maze)
@@ -56,6 +57,7 @@ def _generate_maze(
     config: MazeConfig,
     seed: int | None,
 ) -> Maze:
+    """Generate a maze from the supplied configuration and seed."""
     generator = MazeGenerator(
         width=config.width,
         height=config.height,
@@ -69,6 +71,7 @@ def _generate_maze(
 
 
 def _regenerate(config: MazeConfig, display: Display) -> Player:
+    """Generate, save, and display a new maze with a reset player."""
     new_maze = _generate_maze(config, seed=None)
     output_maze(new_maze, config.output_file)
     display.update_maze(new_maze)
@@ -77,6 +80,7 @@ def _regenerate(config: MazeConfig, display: Display) -> Player:
 
 
 def _read_key() -> str:
+    """Read one lowercase key, using cbreak mode for terminal input."""
     if not sys.stdin.isatty():
         return input().strip().lower()
 
@@ -95,6 +99,7 @@ def _read_key() -> str:
 
 
 def _read_menu_choice() -> str:
+    """Read keys until a valid movement or menu command is entered."""
     while True:
         choice = _read_key()
 
@@ -105,6 +110,7 @@ def _read_menu_choice() -> str:
 
 
 def _show_clear_screen(display: Display, player: Player) -> str:
+    """Show the completed maze and return the selected follow-up action."""
     print(CLEAR_SCREEN, end="")
     display.display_maze(player.position)
 

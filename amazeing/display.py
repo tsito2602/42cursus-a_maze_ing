@@ -27,7 +27,10 @@ Canvas = list[list[str]]
 
 
 class Display:
+    """Render maze state and interaction guides with ANSI colors."""
+
     def __init__(self, maze: Maze) -> None:
+        """Initialize display state for a maze."""
         self.maze = maze
         self.bg_colors = BACKGROUND_COLORS.copy()
         self.show_solution = False
@@ -81,6 +84,7 @@ class Display:
         return "\n".join(lines)
 
     def _render_solution(self, canvas: Canvas) -> None:
+        """Paint solution cell centers and connecting segments."""
         for coordinate in self.maze.solution[1:-1]:
             self._paint_cell_center(canvas, coordinate, "path")
 
@@ -97,6 +101,7 @@ class Display:
             canvas[segment_y][segment_x] = "path"
 
     def _render_player(self, canvas: Canvas, position: Coordinate) -> None:
+        """Paint the player at an expanded-grid coordinate."""
         x, y = position
         canvas[y][x] = "player"
 
@@ -147,10 +152,12 @@ class Display:
         print("4. Quit")
 
     def update_maze(self, new_maze: Maze) -> None:
+        """Replace the displayed maze and hide its solution."""
         self.maze = new_maze
         self.show_solution = False
 
     def toggle_show_solution(self) -> None:
+        """Toggle shortest-path visibility."""
         if self.show_solution:
             self.show_solution = False
         else:

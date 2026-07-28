@@ -41,6 +41,8 @@ WallCandidate: TypeAlias = tuple[int, int, str]
 
 
 class MazeGenerator:
+    """Generate reproducible mazes from dimensions and endpoint settings."""
+
     def __init__(
         self,
         width: int,

@@ -12,18 +12,23 @@ WalkableGrid: TypeAlias = list[list[bool]]
 
 
 def _cell_to_grid_coordinate(position: Coordinate) -> Coordinate:
+    """Convert a maze cell coordinate to its expanded-grid center."""
     x, y = position
     return (x * 2 + 1, y * 2 + 1)
 
 
 class Player:
+    """Store and update a player's position within a maze."""
+
     def __init__(self, maze: Maze) -> None:
+        """Place the player at the maze entry and build its movement grid."""
         self.maze = maze
         self.position = _cell_to_grid_coordinate(maze.entry)
         self.walkable = self._create_walkable_grid(maze)
 
     @staticmethod
     def _create_walkable_grid(maze: Maze) -> WalkableGrid:
+        """Build an expanded grid marking cell centers and open passages."""
         width = maze.width * 2 + 1
         height = maze.height * 2 + 1
         grid = [[False] * width for _ in range(height)]
@@ -47,6 +52,7 @@ class Player:
         return grid
 
     def move(self, key: str) -> bool:
+        """Move one grid position for a valid, unobstructed movement key."""
         movement = MOVES.get(key.lower())
 
         if movement is None:
@@ -70,4 +76,5 @@ class Player:
 
     @property
     def reached_exit(self) -> bool:
+        """Return whether the player has reached the exit cell center."""
         return self.position == _cell_to_grid_coordinate(self.maze.exit)
