@@ -57,7 +57,7 @@ def test_run_handles_menu_actions(
         generated_seeds.append(seed)
         return maze
 
-    def fake_read_menu_choice() -> str:
+    def fake_read_key() -> str:
         """Return the next predefined menu choice."""
         return next(choices)
 
@@ -71,7 +71,7 @@ def test_run_handles_menu_actions(
         pass
 
     monkeypatch.setattr(cli, "_generate_maze", fake_generate_maze)
-    monkeypatch.setattr(cli, "_read_menu_choice", fake_read_menu_choice)
+    monkeypatch.setattr(cli, "_read_key", fake_read_key)
     monkeypatch.setattr(Display, "rotate_wall_color", fake_rotate_wall_color)
     monkeypatch.setattr(Display, "display_maze", do_nothing)
     monkeypatch.setattr(Display, "display_color_guide", do_nothing)
