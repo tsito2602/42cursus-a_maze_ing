@@ -66,6 +66,7 @@ Pythonプロジェクトである。
 - Python 3.10以上
 - uv
 - Make
+- `termios`と`tty`を利用できるUnix系環境（LinuxまたはmacOS）
 - ANSIカラーを表示できるターミナル
 
 ### Installation
@@ -376,6 +377,9 @@ if first_cell & Wall.NORTH:
 - [random — 疑似乱数を生成する](https://docs.python.org/ja/3/library/random.html)
 - [collections.deque — 両端キュー](https://docs.python.org/ja/3/library/collections.html#collections.deque)
 - [enum.IntFlag — ビットフラグ用の列挙型](https://docs.python.org/ja/3/library/enum.html#enum.IntFlag)
+- [termios — POSIXスタイルの端末制御](https://docs.python.org/ja/3/library/termios.html)
+- [tty — 端末制御用の関数群](https://docs.python.org/ja/3/library/tty.html)
+- [エスケープシーケンスによる端末制御](https://www.kushiro-ct.ac.jp/yanagawa/pl2b/06.html)
 - [Python Packaging User Guide 日本語版](https://packaging.python.org/ja/latest/)
 
 ### Use of AI
