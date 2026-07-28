@@ -371,17 +371,12 @@ if first_cell & Wall.NORTH:
 
 ### References
 
-- [Maze generation algorithm — Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm)
-- [Breadth-first search — Wikipedia](https://en.wikipedia.org/wiki/Breadth-first_search)
-- [Python `random` documentation](https://docs.python.org/3/library/random.html)
-- [Python `collections.deque` documentation](https://docs.python.org/3/library/collections.html#collections.deque)
-- [Python `enum.IntFlag` documentation](https://docs.python.org/3/library/enum.html#enum.IntFlag)
-- [Python Packaging User Guide](https://packaging.python.org/en/latest/)
-- [Pydantic documentation](https://docs.pydantic.dev/latest/)
-- [uv documentation](https://docs.astral.sh/uv/)
-- [pytest documentation](https://docs.pytest.org/)
-- [mypy documentation](https://mypy.readthedocs.io/)
-- [flake8 documentation](https://flake8.pycqa.org/)
+- [深さ優先探索 — Wikipedia](https://ja.wikipedia.org/wiki/深さ優先探索)
+- [幅優先探索 — Wikipedia](https://ja.wikipedia.org/wiki/幅優先探索)
+- [random — 疑似乱数を生成する](https://docs.python.org/ja/3/library/random.html)
+- [collections.deque — 両端キュー](https://docs.python.org/ja/3/library/collections.html#collections.deque)
+- [enum.IntFlag — ビットフラグ用の列挙型](https://docs.python.org/ja/3/library/enum.html#enum.IntFlag)
+- [Python Packaging User Guide 日本語版](https://packaging.python.org/ja/latest/)
 
 ### Use of AI
 
