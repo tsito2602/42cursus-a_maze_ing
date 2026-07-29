@@ -4,4 +4,4 @@ __pycache__
 .venv
 venv
 
-maze.txt
+output_maze.txt
