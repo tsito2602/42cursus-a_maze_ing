@@ -65,6 +65,7 @@ def _generate_maze(
         exit_=config.exit_,
         perfect=config.perfect,
         seed=seed,
+        wall_break_ratio=config.wall_break_ratio,
     )
 
     return generator.generate()

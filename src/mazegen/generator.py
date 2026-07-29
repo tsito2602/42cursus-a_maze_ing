@@ -35,7 +35,7 @@ PATTERN_42: list[Coordinate] = [
 PATTERN_WIDTH = 7
 PATTERN_HEIGHT = 5
 
-EXTRA_WALLS_RATIO = 0.3
+DEFAULT_WALL_BREAK_RATIO = 0.3
 
 WallCandidate: TypeAlias = tuple[int, int, str]
 
@@ -51,6 +51,7 @@ class MazeGenerator:
         exit_: Coordinate,
         perfect: bool = True,
         seed: int | None = None,
+        wall_break_ratio: float = DEFAULT_WALL_BREAK_RATIO,
     ) -> None:
         """Set up a cells with entry/exit and the 42 pattern placed."""
         self.width = width
@@ -58,6 +59,7 @@ class MazeGenerator:
         self.entry = entry
         self.exit = exit_
         self.perfect = perfect
+        self.wall_break_ratio = wall_break_ratio
         self.rng = random.Random(seed)
         self.cells: list[list[int]] = [
             [Wall.ALL] * width for _ in range(height)
@@ -76,6 +78,11 @@ class MazeGenerator:
 
         if self.exit in self.pattern_cells:
             raise ValueError("EXIT overlaps the 42 pattern")
+
+        if not 0 < self.wall_break_ratio <= 1:
+            raise ValueError(
+                "WALL_BREAK_RATIO must be greater than 0 and at most 1"
+            )
 
         self.visited: set[Coordinate] = set()
 
@@ -219,17 +226,16 @@ class MazeGenerator:
 
         return False
 
-    def _get_openable_cnt(self) -> int:
+    def _get_openable_cnt(self, candidates: list[WallCandidate]) -> int:
         """Calculate the target number of extra walls to open."""
-        usable_cells = self.width * self.height - len(self.pattern_cells)
-        return max(1, int(usable_cells * EXTRA_WALLS_RATIO))
+        return max(1, int(len(candidates) * self.wall_break_ratio))
 
     def _open_extra_walls(self) -> None:
         """Open extra walls without creating a fully open 3-by-3 area."""
         candidates = self._openable_walls()
         self.rng.shuffle(candidates)
 
-        openable = self._get_openable_cnt()
+        openable = self._get_openable_cnt(candidates)
         opened = 0
 
         for candidate in candidates:

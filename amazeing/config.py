@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from mazegen.maze import Coordinate
+from mazegen.generator import DEFAULT_WALL_BREAK_RATIO
 
 
 class MazeConfig(BaseModel):
@@ -14,6 +15,9 @@ class MazeConfig(BaseModel):
     output_file: str = Field(min_length=1)
     perfect: bool
     seed: int | None = Field(default=None)
+    wall_break_ratio: float = Field(
+        default=DEFAULT_WALL_BREAK_RATIO, gt=0, le=1
+    )
 
     @model_validator(mode="after")
     def validate_coordinates(self) -> "MazeConfig":

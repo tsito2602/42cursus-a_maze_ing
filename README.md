@@ -150,10 +150,12 @@ make clean
 | `OUTPUT_FILE` | 必須 | ファイルパス | 生成結果の出力先 | `OUTPUT_FILE=maze.txt` |
 | `PERFECT` | 必須 | `True`または`False` | 完全迷路を生成するか | `PERFECT=True` |
 | `SEED` | 任意 | 整数 | 乱数のseed | `SEED=42` |
+| `WALL_BREAK_RATIO` | 任意 | `0`より大きく`1`以下の小数 | 壊せる壁候補数に対して、壊す壁の目標数を決める割合 | `WALL_BREAK_RATIO=0.3` |
 
 `ENTRY`と`EXIT`は迷路内の異なるセルでなければならない。同じ設定とseedを
 使用すると同じ迷路が生成される。`SEED`を省略した場合は実行ごとに異なる
-乱数系列を使用する。
+乱数系列を使用する。`WALL_BREAK_RATIO`のデフォルト値は`0.3`であり、
+`PERFECT=False`の場合だけ使用する。
 
 設定例:
 
@@ -166,6 +168,7 @@ EXIT=19,14
 OUTPUT_FILE=maze.txt
 PERFECT=False
 SEED=42
+WALL_BREAK_RATIO=0.3
 ```
 
 ### Maze Representation and Output
@@ -174,10 +177,10 @@ SEED=42
 
 | ビット | 値 | 方角 |
 |---|---:|---|
-| 0 | `0x1` | North |
-| 1 | `0x2` | East |
-| 2 | `0x4` | South |
-| 3 | `0x8` | West |
+| 0 | `0b0001` | North |
+| 1 | `0b0010` | East |
+| 2 | `0b0100` | South |
+| 3 | `0b1000` | West |
 
 ビットが1なら壁は閉じており、0なら開いている。例えば`3`は北と東、
 `a`は東と西に壁がある。
@@ -271,8 +274,9 @@ generator = MazeGenerator(
     height=15,
     entry=(0, 0),
     exit_=(19, 14),
-    perfect=True,
+    perfect=False,
     seed=42,
+    wall_break_ratio=0.3,
 )
 
 maze = generator.generate()
@@ -283,6 +287,9 @@ print(maze.solution)
 
 `width`と`height`で迷路の大きさ、`entry`と`exit_`で入口と出口、
 `perfect`で完全迷路かどうか、`seed`で再現性を指定する。
+`wall_break_ratio`は、非完全迷路で壊す壁の目標数を、壊せる壁候補数に
+対する割合で指定する。3×3の領域が完全に開かないように壁を残すため、
+実際に壊す壁の数が目標数を下回る場合がある。
 
 ### Maze Data Model
 
