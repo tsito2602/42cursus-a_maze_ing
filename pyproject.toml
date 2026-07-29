@@ -1,6 +1,7 @@
 [project]
 name = "mazegen"
 version = "1.0.0"
+readme = "src/mazegen/README.md"
 requires-python = ">=3.10"
 dependencies = [
     "pydantic>=2.13.4",

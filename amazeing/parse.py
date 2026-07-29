@@ -1,4 +1,4 @@
-from amazeing.config import MazeConfig
+from .config import MazeConfig
 from mazegen import Coordinate
 
 CONFIG_FIELDS = {
@@ -9,6 +9,7 @@ CONFIG_FIELDS = {
     "OUTPUT_FILE": "output_file",
     "PERFECT": "perfect",
     "SEED": "seed",
+    "WALL_BREAK_RATIO": "wall_break_ratio",
 }
 
 
@@ -18,6 +19,14 @@ def parse_int(key: str, value: str) -> int:
         return int(value)
     except ValueError as e:
         raise ValueError(f"Invalid integer for {key}: {value!r}") from e
+
+
+def parse_float(key: str, value: str) -> float:
+    """Parse an float value and report the associated configuration key."""
+    try:
+        return float(value)
+    except ValueError as e:
+        raise ValueError(f"Invalid float for {key}: {value!r}") from e
 
 
 def parse_coordinate(key: str, value: str) -> Coordinate:
@@ -62,6 +71,9 @@ def parse_value(key: str, value: str) -> object:
 
         case "PERFECT":
             return parse_bool(key, value)
+
+        case "WALL_BREAK_RATIO":
+            return parse_float(key, value)
 
         case _:
             return value
