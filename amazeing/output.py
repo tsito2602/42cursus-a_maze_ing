@@ -25,6 +25,6 @@ def output_maze(maze: Maze, output_file: str) -> None:
             file.write("".join(format(cell, "x") for cell in row) + "\n")
 
         file.write("\n")
-        file.write(f"{maze.entry[0]},{maze.entry[1]}     # entry (x, y)\n")
-        file.write(f"{maze.exit[0]},{maze.exit[1]}     # exit (x, y)\n")
+        file.write(f"{maze.entry[0]},{maze.entry[1]}\n")
+        file.write(f"{maze.exit[0]},{maze.exit[1]}\n")
         file.write(_path_to_letters(maze.solution) + "\n")
