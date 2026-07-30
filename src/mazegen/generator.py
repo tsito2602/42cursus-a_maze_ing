@@ -1,3 +1,4 @@
+import sys
 import random
 from typing import TypeAlias
 from .maze import DIRECTIONS, Maze, Wall, Coordinate
@@ -96,7 +97,10 @@ class MazeGenerator:
     def _place_42_pattern(self) -> set[Coordinate]:
         """Return the cell coordinates that make up the centered 42 pattern."""
         if self.width < PATTERN_WIDTH + 2 or self.height < PATTERN_HEIGHT + 2:
-            print("error :42 pattern is too big for the maze size  ")
+            print(
+                "Warning: The maze is too small to display the 42 pattern.",
+                file=sys.stderr,
+            )
             return set()
 
         off_x = (self.width - PATTERN_WIDTH) // 2
