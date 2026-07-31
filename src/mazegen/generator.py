@@ -54,24 +54,21 @@ class MazeGenerator:
         seed: int | None = None,
         wall_break_ratio: float = DEFAULT_WALL_BREAK_RATIO,
     ) -> None:
-        """Set up a cells with entry/exit and the 42 pattern placed."""
-        self.width = width
-        self.height = height
-        self.entry = entry
-        self.exit = exit_
+        """Initialize validated settings and maze-generation state."""
+        (
+            self.width,
+            self.height,
+            self.entry,
+            self.exit,
+            self.wall_break_ratio,
+        ) = self._validate_parameters(
+            width,
+            height,
+            entry,
+            exit_,
+            wall_break_ratio,
+        )
         self.perfect = perfect
-        self.wall_break_ratio = wall_break_ratio
-        self.rng = random.Random(seed)
-        self.cells: list[list[int]] = [
-            [Wall.ALL] * width for _ in range(height)
-        ]
-
-        if not self._in_frame(*self.entry):
-            raise ValueError("ENTRY is outside the maze")
-
-        if not self._in_frame(*self.exit):
-            raise ValueError("EXIT is outside the maze")
-
         self.pattern_cells: set[Coordinate] = self._place_42_pattern()
 
         if self.entry in self.pattern_cells:
@@ -80,12 +77,119 @@ class MazeGenerator:
         if self.exit in self.pattern_cells:
             raise ValueError("EXIT overlaps the 42 pattern")
 
-        if not 0 < self.wall_break_ratio <= 1:
+        self.rng = random.Random(seed)
+        self.cells: list[list[int]] = [
+            [Wall.ALL] * self.width
+            for _ in range(self.height)
+        ]
+        self.visited: set[Coordinate] = set()
+
+    @staticmethod
+    def _validate_parameters(
+        width: object,
+        height: object,
+        entry: object,
+        exit_: object,
+        wall_break_ratio: object,
+    ) -> tuple[int, int, Coordinate, Coordinate, float]:
+        """Validate and normalize maze-generator parameters."""
+        if (
+            not isinstance(width, int)
+            or isinstance(width, bool)
+            or width <= 0
+        ):
             raise ValueError(
-                "WALL_BREAK_RATIO must be greater than 0 and at most 1"
+                f"WIDTH must be a positive integer; got {width!r}"
             )
 
-        self.visited: set[Coordinate] = set()
+        if (
+            not isinstance(height, int)
+            or isinstance(height, bool)
+            or height <= 0
+        ):
+            raise ValueError(
+                f"HEIGHT must be a positive integer; got {height!r}"
+            )
+
+        if not isinstance(entry, tuple) or len(entry) != 2:
+            raise ValueError(
+                "ENTRY must be a pair of integers (x, y); "
+                f"got {entry!r}"
+            )
+
+        entry_x, entry_y = entry
+
+        if (
+            not isinstance(entry_x, int)
+            or isinstance(entry_x, bool)
+            or not isinstance(entry_y, int)
+            or isinstance(entry_y, bool)
+        ):
+            raise ValueError(
+                "ENTRY must be a pair of integers (x, y); "
+                f"got {entry!r}"
+            )
+
+        validated_entry = entry_x, entry_y
+
+        if not isinstance(exit_, tuple) or len(exit_) != 2:
+            raise ValueError(
+                "EXIT must be a pair of integers (x, y); "
+                f"got {exit_!r}"
+            )
+
+        exit_x, exit_y = exit_
+
+        if (
+            not isinstance(exit_x, int)
+            or isinstance(exit_x, bool)
+            or not isinstance(exit_y, int)
+            or isinstance(exit_y, bool)
+        ):
+            raise ValueError(
+                "EXIT must be a pair of integers (x, y); "
+                f"got {exit_!r}"
+            )
+
+        validated_exit = exit_x, exit_y
+
+        if not (0 <= entry_x < width and 0 <= entry_y < height):
+            raise ValueError(
+                f"ENTRY {validated_entry} is outside the maze bounds "
+                f"(WIDTH={width}, HEIGHT={height}). "
+                f"Expected 0 <= x < {width} and 0 <= y < {height}."
+            )
+
+        if not (0 <= exit_x < width and 0 <= exit_y < height):
+            raise ValueError(
+                f"EXIT {validated_exit} is outside the maze bounds "
+                f"(WIDTH={width}, HEIGHT={height}). "
+                f"Expected 0 <= x < {width} and 0 <= y < {height}."
+            )
+
+        if validated_entry == validated_exit:
+            raise ValueError(
+                "ENTRY and EXIT must be different; "
+                f"both are {validated_entry}"
+            )
+
+        if (
+            isinstance(wall_break_ratio, bool)
+            or not isinstance(wall_break_ratio, (int, float))
+            or not 0 < wall_break_ratio <= 1
+        ):
+            raise ValueError(
+                "WALL_BREAK_RATIO must be greater than 0 and at most 1; "
+                f"got {wall_break_ratio!r}"
+            )
+
+        return (
+            width,
+            height,
+            validated_entry,
+            validated_exit,
+            float(wall_break_ratio),
+        )
 
     def _in_frame(self, x: int, y: int) -> bool:
         """Check whether (x, y) lies within the maze bounds."""
