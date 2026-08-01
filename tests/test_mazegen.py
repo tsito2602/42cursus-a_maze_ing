@@ -1,3 +1,5 @@
+from pytest import CaptureFixture
+
 from mazegen import Maze, Wall, MazeGenerator
 
 WIDTH = 20
@@ -6,6 +8,20 @@ ENTRY = (0, 0)
 EXIT = (19, 14)
 PERFECT = True
 SEED = 42
+
+
+def test_small_maze_warns_when_42_pattern_is_omitted(
+    capsys: CaptureFixture[str],
+) -> None:
+    """Write the required small-maze warning to standard error."""
+    generator = MazeGenerator(4, 5, (0, 0), (3, 4))
+
+    captured = capsys.readouterr()
+    assert generator.pattern_cells == set()
+    assert captured.out == ""
+    assert captured.err == (
+        "Warning: The maze is too small to display the 42 pattern.\n"
+    )
 
 
 def test_seed() -> None:

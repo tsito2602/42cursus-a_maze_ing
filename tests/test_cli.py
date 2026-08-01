@@ -30,6 +30,7 @@ def test_read_menu_choice_retries_invalid_input(
 
 def test_run_handles_menu_actions(
     monkeypatch: MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     """Handle regenerate, rotate, and quit menu actions."""
     config = MazeConfig(
@@ -37,7 +38,7 @@ def test_run_handles_menu_actions(
         height=1,
         entry=(0, 0),
         exit_=(1, 0),
-        output_file="maze.txt",
+        output_file=str(tmp_path / "maze.txt"),
         perfect=True,
         seed=42,
     )
