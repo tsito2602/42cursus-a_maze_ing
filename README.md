@@ -83,6 +83,14 @@ make install
 uv sync
 ```
 
+依存関係の準備後、仮想環境を有効化する。
+
+```bash
+source .venv/bin/activate
+```
+
+仮想環境を終了する場合は`deactivate`を実行する。
+
 ### Running the Application
 
 課題指定の実行形式は次のとおりである。
@@ -91,7 +99,13 @@ uv sync
 python3 a_maze_ing.py config.txt
 ```
 
-uv環境では次のコマンドを使用できる。
+仮想環境を有効化せずにuv経由で実行する場合は、次のコマンドを使用する。
+
+```bash
+uv run python a_maze_ing.py config.txt
+```
+
+Makefileから同じように実行する場合は、次のコマンドを使用する。
 
 ```bash
 make run
